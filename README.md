@@ -1,5 +1,4 @@
 # Gitlab Gogot (gg)
--
 
 I'm not sure where it went wrong but it used to be that an authenticated token could go get a project in a subgroup if it had access to that group, but it seems that might have changed.
 
