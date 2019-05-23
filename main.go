@@ -32,9 +32,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/golang-lru"
+	lru "github.com/hashicorp/golang-lru"
 	"github.com/tomasen/realip"
-	"github.com/xanzy/go-gitlab"
+	gitlab "github.com/xanzy/go-gitlab"
 )
 
 var defaultGitlabAPI = "https://gitlab.com/api/v4"
@@ -54,11 +54,15 @@ func sendResponse(w http.ResponseWriter, r *http.Request, proj *gitlab.Project) 
 		return
 	}
 
-	fmt.Fprintf(w, `<html><head><meta name="go-import" content="%s/%s git %s" /></head></html>%s`,
+	fmt.Fprintf(w, `<html><head>
+	<meta name="go-import" content="%[1]s/%[2]s git %[3]s" />
+	<meta name="go-source" content="%[1]s/%[2]s _ %[4]s/tree/master{/dir} %[4]s/tree/master{/dir}/{file}#L{line}" />
+</head></html>
+`,
 		u.Host,
 		proj.PathWithNamespace,
 		proj.HTTPURLToRepo,
-		"\n",
+		proj.WebURL,
 	)
 }
 
@@ -157,7 +161,7 @@ func main() {
 
 			for {
 				// Step back through the tree to find the parent project path
-				proj, _, err := c.Projects.GetProject(rpath, &gitlab.GetProjectOptions{}, gitlab.WithContext(r.Context()))
+				proj, _, err := c.Projects.GetProject(rpath, gitlab.WithContext(r.Context()))
 				if err == nil {
 					cache.Add(r.URL.Path, proj)
 					sendResponse(w, r, proj)
