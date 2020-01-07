@@ -161,7 +161,7 @@ func main() {
 
 			for {
 				// Step back through the tree to find the parent project path
-				proj, _, err := c.Projects.GetProject(rpath, gitlab.WithContext(r.Context()))
+				proj, _, err := c.Projects.GetProject(rpath, nil, gitlab.WithContext(r.Context()))
 				if err == nil {
 					cache.Add(r.URL.Path, proj)
 					sendResponse(w, r, proj)
